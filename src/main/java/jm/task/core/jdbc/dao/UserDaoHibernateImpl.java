@@ -9,26 +9,21 @@ import javax.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserDaoHibernateImpl implements UserDao {
 
-    private static Transaction transaction = null;
+public class UserDaoHibernateImpl implements UserDao {
 
     public UserDaoHibernateImpl() {
 
     }
 
-
     @Override
     public void createUsersTable() {
         try (Session session = Util.getSessionFactory().openSession()) {
-            transaction = session.beginTransaction();
+            Transaction transaction = session.beginTransaction();
             session.createSQLQuery("CREATE TABLE IF NOT EXISTS users" +
                     "(id INT NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY, name VARCHAR(45), lastname VARCHAR(45), age INT)").executeUpdate();
             transaction.commit();
         } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
             System.out.println("При создании таблицы возникло исключение: " + e);
         }
     }
@@ -36,13 +31,10 @@ public class UserDaoHibernateImpl implements UserDao {
     @Override
     public void dropUsersTable() {
         try (Session session = Util.getSessionFactory().openSession()) {
-            transaction = session.beginTransaction();
+            Transaction transaction = session.beginTransaction();
             session.createSQLQuery("DROP TABLE IF EXISTS users").executeUpdate();
             transaction.commit();
         } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
             System.out.println("При удалении таблицы возникло исключение: " + e);
         }
     }
@@ -50,15 +42,12 @@ public class UserDaoHibernateImpl implements UserDao {
     @Override
     public void saveUser(String name, String lastName, byte age) {
         try (Session session = Util.getSessionFactory().openSession()) {
-            transaction = session.beginTransaction();
+            Transaction transaction = session.beginTransaction();
             User user = new User(name, lastName, age);
             session.save(user);
             transaction.commit();
             System.out.println("User с именем – " + name + " добавлен в базу данных");
         } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
             System.out.println("Во время сохранения возникло исключение: " + e);
         }
     }
@@ -66,14 +55,11 @@ public class UserDaoHibernateImpl implements UserDao {
     @Override
     public void removeUserById(long id) {
         try (Session session = Util.getSessionFactory().openSession()) {
-            transaction = session.beginTransaction();
+            Transaction transaction = session.beginTransaction();
             User user = session.get(User.class, id);
             session.delete(user);
             transaction.commit();
         } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
             System.out.println("Во время удаления по id возникло исключение: " + e);
         }
     }
@@ -93,13 +79,10 @@ public class UserDaoHibernateImpl implements UserDao {
     @Override
     public void cleanUsersTable() {
         try (Session session = Util.getSessionFactory().openSession()) {
-            transaction = session.beginTransaction();
+            Transaction transaction = session.beginTransaction();
             session.createQuery("DELETE User").executeUpdate();
             transaction.commit();
         } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
             System.out.println("Во время очистки таблицы возникло исключение: " + e);
         }
     }
